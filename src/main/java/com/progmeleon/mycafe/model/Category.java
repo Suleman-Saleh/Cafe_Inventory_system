@@ -10,6 +10,7 @@ public class Category implements Serializable {
     private String categoryName;
 
     public Category(String categoryName) {
+
         this.categoryId = nextCategoryId++;
         this.categoryName = categoryName;
     }

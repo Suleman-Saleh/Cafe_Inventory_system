@@ -83,7 +83,7 @@ public class UserController {
             }
         } while (userRole == null);
 
-        User newUser = new User(username, password, name);
+        User newUser = new User(username, password);
 
         // Check if the username is unique
         if (!isUsernameUnique(username)) {
@@ -129,7 +129,7 @@ public class UserController {
 
                 user.setUsername(newUsername);
                 user.setPassword(newPassword);
-                user.setName(newName);
+//                user.setName(newName);
 
                 FileHandler.saveDataToFile(users, "users.ser");
                 System.out.println("User updated successfully.");
@@ -156,7 +156,7 @@ public class UserController {
     private void displayUsers() {
         System.out.println("\n====== Users ======");
         for (User user : users) {
-            System.out.println(", Name: " + user.getName() +", "+ "Username: " + user.getUsername() +", "+ "Password: " + user.getPassword() +" " + ", Role: " + user.getRole());
+            System.out.println( "Username: " + user.getUsername() +", "+ "Password: " + user.getPassword() +" " + ", Role: " + user.getRole());
         }
     }
 

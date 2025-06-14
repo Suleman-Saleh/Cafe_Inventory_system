@@ -89,7 +89,7 @@ public class InventorySystem {
     }
 
     private void createDefaultAdminUser() {
-        User adminUser = new User("admin", "admin", "admin");
+        User adminUser = new User("admin", "admin");
         adminUser.setRole(UserRole.ADMIN);
         users = new ArrayList<>();  // Initialize the users list
         users.add(adminUser);
@@ -120,9 +120,9 @@ public class InventorySystem {
                 if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
                     currentUser = user;
                     currentUserRole = user.getRole();
-                    System.out.println("Login successful. Welcome, " + currentUser.getName() + "!");
+                    System.out.println("Login successful. Welcome, " + currentUser.getUsername() + "!");
                     isAuthenticated = true;
-                    break;
+                     break;
                 }
             }
 
@@ -144,7 +144,6 @@ public class InventorySystem {
         return currentUserRole;
     }
 
-    // Get the role of a user by username
     private UserRole getUserRoleByUsername(String username) {
         for (User user : users) {
             if (user.getUsername().equals(username)) {

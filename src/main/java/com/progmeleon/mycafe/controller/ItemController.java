@@ -3,10 +3,12 @@ package com.progmeleon.mycafe.controller;
 import com.progmeleon.mycafe.model.Item;
 import com.progmeleon.mycafe.model.Category;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Scanner;
 
-public class ItemController {
+public class ItemController implements Serializable {
+    static final long serialVersionUID = 1L;
     private static List<Item> items;
     private static List<Category> categories;
 
@@ -155,7 +157,7 @@ public class ItemController {
     }
 
     // Get category ID by name
-    private static int getCategoryIDByName(String categoryName) {
+    public static int getCategoryIDByName(String categoryName) {
         for (Category category : categories) {
             if (category instanceof Category && category.getCategoryName().equalsIgnoreCase(categoryName)) {
                 return category.getCategoryId();
