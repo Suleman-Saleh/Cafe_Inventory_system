@@ -1,75 +1,44 @@
 package com.progmeleon.mycafe.model;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Order implements Serializable {
-    private static final long serialVersionUID = 1L;
-
+public class Order {
+    private static int lastOrderId = 0;
     private int orderId;
-    private LocalDateTime orderTime;
-    private User user;
-    private List<Item> items;
-    private OrderStatus orderStatus;
+    private User customer;
+    private List<OrderItem> items;
 
-    public Order(int orderId, User user, List<Item> items, OrderStatus orderStatus) {
-        this.orderId = orderId;
-        this.orderTime = LocalDateTime.now();
-        this.user = user;
-        this.items = items;
-        this.orderStatus = orderStatus;
+    public Order(User customer) {
+        this.orderId = ++lastOrderId;
+        this.customer = customer;
+        this.items = new ArrayList<>();
     }
 
     public int getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
+    public User getCustomer() {
+        return customer;
     }
 
-    public LocalDateTime getOrderTime() {
-        return orderTime;
+    public List<OrderItem> getItems() {
+        return new ArrayList<>(items);
     }
 
-    public void setOrderTime(LocalDateTime orderTime) {
-        this.orderTime = orderTime;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
-
-    public void setItems(List<Item> items) {
-        this.items = items;
-    }
-
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
-    }
-
-    public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
+    public void addItem(Item item, int quantity) {
+        OrderItem orderItem = new OrderItem(item, quantity);
+        items.add(orderItem);
     }
 
     @Override
     public String toString() {
         return "Order{" +
                 "orderId=" + orderId +
-                ", orderTime=" + orderTime +
-                ", user=" + user +
+                ", customer=" + customer +
                 ", items=" + items +
-                ", orderStatus=" + orderStatus +
                 '}';
     }
 }
+

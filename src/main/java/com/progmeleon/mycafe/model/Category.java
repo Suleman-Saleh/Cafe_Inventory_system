@@ -1,18 +1,37 @@
 package com.progmeleon.mycafe.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 
 public class Category implements Serializable {
-    private static final long serialVersionUID = 123456789L;
 
     private static int nextCategoryId = 1;
     private int categoryId;
     private String categoryName;
 
+<<<<<<< HEAD
     public Category(String categoryName) {
 
+=======
+    public Category(@JsonProperty("categoryName")String categoryName) {
+>>>>>>> 0fde3f49b90adf59fae535234a52de3a1493e31c
         this.categoryId = nextCategoryId++;
         this.categoryName = categoryName;
+    }
+
+    public Category(String categoryName, int categoryId) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+    }
+
+    public Category(int id, String categoryName) {
+        this.categoryId = id;
+        this.categoryName = categoryName;
+    }
+
+    public Category() {
+
     }
 
     public int getCategoryId() {
@@ -37,11 +56,15 @@ public class Category implements Serializable {
 
     @Override
     public String toString() {
-        return "Category [ID: " + categoryId + ", Name: " + categoryName + "]";
+        return categoryName;
     }
 
     // Check if the category already exists
     public boolean equalsIgnoreCase(String categoryName) {
         return this.categoryName.equalsIgnoreCase(categoryName);
+    }
+
+    public int getItemId() {
+        return categoryId;
     }
 }

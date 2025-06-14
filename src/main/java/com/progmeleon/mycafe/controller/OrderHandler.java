@@ -1,76 +1,104 @@
 package com.progmeleon.mycafe.controller;
 
+import com.progmeleon.mycafe.config.ConfigureExistingData;
 import com.progmeleon.mycafe.model.Item;
 import com.progmeleon.mycafe.model.Order;
-import com.progmeleon.mycafe.model.OrderStatus;
+import com.progmeleon.mycafe.model.OrderItem;
 import com.progmeleon.mycafe.model.User;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class OrderHandler {
-    private static List<Order> orders;
+    private static List<Order> orders = new ArrayList<>();
 
-    public OrderHandler() {
-        orders = new ArrayList<>();
-        loadOrders();
-    }
+    public void placeOrder() {
+        Scanner scanner = new Scanner(System.in);
 
-    private void loadOrders() {
-        try (ObjectInputStream orderInputStream = new ObjectInputStream(new FileInputStream("orders.ser"))) {
-            orders = (List<Order>) orderInputStream.readObject();
-            System.out.println("Orders loaded successfully.");
-        } catch (FileNotFoundException e) {
-            System.out.println("Orders file not found. Creating new order data.");
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+        // Get customer details
+        System.out.print("Enter customer name: ");
+        String customerName = scanner.nextLine();
+        User customer = new User(customerName);
+
+        // Display available items
+        System.out.println("Available items:");
+        displayItems(ConfigureExistingData.items);
+
+        // Get items for the order
+        List<OrderItem> orderItems = new ArrayList<>();
+        char addMoreItems = 'n';
+        do {
+            System.out.print("Enter item name for the order: ");
+            String itemName = scanner.nextLine();
+
+            // Find the existing item by name
+            Item existingItem = findItemByName(itemName, ConfigureExistingData.items);
+
+            if (existingItem != null) {
+                System.out.print("Enter quantity: ");
+                int quantity = scanner.nextInt();
+                scanner.nextLine(); // Consume the newline character
+                orderItems.add(new OrderItem(existingItem, quantity));
+                System.out.print("Add more items? (y/n): ");
+                addMoreItems = scanner.nextLine().charAt(0);
+            } else {
+                System.out.println("Item not found. Please enter a valid item name.");
+            }
+        } while (addMoreItems == 'y' || addMoreItems == 'Y');
+
+        // Create a new order and add it to the orders list
+        Order newOrder = new Order(customer);
+        for (OrderItem orderItem : orderItems) {
+            newOrder.addItem(orderItem.getItem(), orderItem.getQuantity());
         }
-    }
-
-    public void saveOrders() {
-        try (ObjectOutputStream orderOutputStream = new ObjectOutputStream(new FileOutputStream("orders.ser"))) {
-            orderOutputStream.writeObject(orders);
-            System.out.println("Orders saved successfully.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void placeOrder(User user, List<Item> items) {
-        int orderId = generateOrderId();
-        Order order = new Order(orderId, user, items, OrderStatus.PENDING);
-        orders.add(order);
-        saveOrders();
-        System.out.println("Order placed successfully. Order ID: " + orderId);
-    }
-
-    private int generateOrderId() {
-        // Implement your logic to generate a unique order ID
-        // This can be based on the current time, a counter, etc.
-        // For simplicity, a placeholder implementation is used here.
-        return orders.size() + 1;
+        orders.add(newOrder);
+        generateBill(newOrder);
+        System.out.println("Order taken successfully.");
     }
 
     public void displayOrders() {
         if (orders.isEmpty()) {
             System.out.println("No orders available.");
         } else {
+            System.out.println("\n====== Orders ======");
             for (Order order : orders) {
                 System.out.println(order);
             }
         }
     }
 
-    public void updateOrderStatus(int orderId, OrderStatus newStatus) {
-        for (Order order : orders) {
-            if (order.getOrderId() == orderId) {
-                order.setOrderStatus(newStatus);
-                saveOrders();
-                System.out.println("Order status updated successfully.");
-                return;
+    private void displayItems(List<Item> itemList) {
+        for (Item item : itemList) {
+            System.out.println(item.getName());
+        }
+    }
+
+    private Item findItemByName(String itemName, List<Item> itemList) {
+        for (Item item : itemList) {
+            if (item.getName().equalsIgnoreCase(itemName)) {
+                return item;
             }
         }
-        System.out.println("Order not found.");
+        return null;
+    }
+
+    private void generateBill(Order order) {
+        System.out.println("\n====== Bill ======");
+        System.out.println("Order ID: " + order.getOrderId());
+        System.out.println("Customer: " + order.getCustomer().getName());
+        System.out.println("\nItems:");
+
+        for (OrderItem orderItem : order.getItems()) {
+            Item item = orderItem.getItem();
+            System.out.println("- " + item.getName() + ": $" + item.getPrice() +
+                    " x " + orderItem.getQuantity() + " = $" + (item.getPrice() * orderItem.getQuantity()));
+        }
+
+        double totalAmount = order.getItems().stream()
+                .mapToDouble(orderItem -> orderItem.getItem().getPrice() * orderItem.getQuantity())
+                .sum();
+
+        System.out.println("\nTotal Amount: $" + totalAmount);
     }
 }
